@@ -1,0 +1,9 @@
+# === Framework ===
+fastapi==0.111.0
+# === Configuration & environnement ===
+python-dotenv==1.0.0
+# === Serveur ===
+ngrok==1.4.0
+uvicorn==0.29.0
+# === Utils ===
+loguru==0.7.2
