@@ -7,3 +7,5 @@ ngrok==1.4.0
 uvicorn==0.29.0
 # === Utils ===
 loguru==0.7.2
+# === Test unitaires ===
+pytest==8.4.2
