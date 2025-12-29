@@ -1,3 +1,4 @@
+#region TEST 1
 # import asyncio
 # from contextlib import asynccontextmanager
 # from dotenv import load_dotenv
@@ -142,38 +143,40 @@
 
 # if __name__ == "__main__":
 #     uvicorn.run("main:app", host="0.0.0.0", port=APPLICATION_PORT)
+#endregion
 
 
-import asyncio
-from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import os
 
 from fastapi.responses import JSONResponse
 import httpx
 import uvicorn
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI,Query
 from loguru import logger
 
 #=============Configuration==============
+
 #chargement de variable d'env
 load_dotenv()
 #info pour Ngrok
-NGROK_AUTH_TOKEN = os.getenv("NGROK_AUTHTOKEN", "")
 APPLICATION_PORT = 5000
-#info pour Strava
+#info pour connection au webhook de Strava
 CLIENT_ID =  os.getenv("CLIENT_ID", "")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET", "")
 VERIFY_TOKEN = os.getenv("TOKEN_SECRET", "")
+#!IMPORTANT il faut changer le PUBLIC URL si les infos de ngrok change
+#TODO implémenter une méthode pour automatiser la recherche de l'url get_url()
 PUBLIC_URL = os.getenv("PUBLIC_URL","")
 STRAVA_BASE_URL = "https://www.strava.com/api/v3/push_subscriptions"
-#=============Lifespan==============
-
+#Stock les activités envoyer par Strava, a terme à stocker dans MangoDB
+activities = []
+#=============App==============
 
 app = FastAPI()
 
-
-#route
+#=============Route=============
+#region GET
 
 @app.get("/")
 async def root():
@@ -185,8 +188,8 @@ async def webhook_validation(
     hub_challenge: str = Query(None, alias="hub.challenge"),
     hub_verify_token: str = Query(None, alias="hub.verify_token"),
 ):
-
-    logger.info(f"Webhook GET verification called with: mode={hub_mode}, challenge={hub_challenge}, verify_token={hub_verify_token}")
+    """Utiliser dans le subscribe: Doit absolument renvoier 200 et le hub.challenge en format JSON"""
+    # logger.info(f"Webhook GET verification called with: mode={hub_mode}, challenge={hub_challenge}, verify_token={hub_verify_token}")
 
     if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
         return JSONResponse(
@@ -197,6 +200,8 @@ async def webhook_validation(
 
 @app.get("/strava/subscriptions")
 async def list_subscriptions():
+    """Renvoie les webhook actif (1 pour la version gratuite)
+    """
     async with httpx.AsyncClient() as client:
         r = await client.get(
             STRAVA_BASE_URL,
@@ -207,8 +212,18 @@ async def list_subscriptions():
         )
     return r.json()
 
+@app.get("/activities")
+async def get_activities():
+    """Renvoie une liste d'activités
+    """
+    return activities
+
+#endregion
+#region DELETE
+
 @app.delete("/strava/subscriptions/{sub_id}")
 async def delete_subscription(sub_id: int):
+    """Permet la suppression du webhook si l'id est donné"""
     async with httpx.AsyncClient() as client:
         r = await client.delete(
             f"{STRAVA_BASE_URL}/{sub_id}",
@@ -222,9 +237,13 @@ async def delete_subscription(sub_id: int):
         "response": r.text
     }
 
+#endregion
+#region POST
+
 @app.post("/strava/subscribe")
 async def create_strava_subscription():
-
+    """Lance la procédure pour créer le webhook avec les informations Dev et le callback_url, a faire une seule fois
+    """
     payload = {
         "client_id": CLIENT_ID,
         "client_secret": CLIENT_SECRET,
@@ -246,6 +265,9 @@ async def create_strava_subscription():
 
 @app.post("/webhook")
 async def webhook_events(payload: dict):
+    """Receptionne 
+    """
+    activities.append(payload)
     owner_id = payload.get("owner_id","unkown")
     object_type = payload.get("object_type","unkown")
     aspect_type = payload.get("aspect_type","unkown")
@@ -254,6 +276,7 @@ async def webhook_events(payload: dict):
 
     return {"status": "ok"}
 
+#endregion
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=APPLICATION_PORT)
