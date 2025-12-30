@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlencode
 import httpx
 
 CLIENT_ID = os.getenv("CLIENT_ID")
@@ -37,3 +38,40 @@ async def get_subscriptions() -> dict:
             params={"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET}
         )
     return response.json()
+
+async def get_login(uri :str):
+    params = {
+        "client_id":CLIENT_ID,
+        "response_type":"code",
+        "redirect_uri": f"{uri}/strava/auth/callback",
+        "approval_prompt":"force",
+        "scope":"read,activity:read_all"
+    }
+    url ="https://www.strava.com/oauth/authorize?"+ urlencode(params)
+    return url
+
+async def callback(code: str):
+    async with httpx.AsyncClient() as client:
+        r = await client.post(
+            "https://www.strava.com/oauth/token",
+            data={
+                "client_id": CLIENT_ID,
+                "client_secret": CLIENT_SECRET,
+                "code": code,
+                "grant_type": "authorization_code",
+            },
+        )
+        data = r.json()
+
+    athlete_id = data["athlete"]["id"]
+    access_token = data["access_token"]
+    refresh_token = data["refresh_token"]
+
+    print("Athlete:", athlete_id)
+    print("access_token:", access_token)
+    print("refresh_token:", refresh_token)
+
+    return {
+        "status": "connected",
+        "athlete_id": athlete_id
+    }

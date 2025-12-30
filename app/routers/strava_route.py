@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Query
+from fastapi.responses import RedirectResponse
 from loguru import logger 
 import os
 from services import strava_service
+from services import oauth
+
 
 PUBLIC_URL = os.getenv("PUBLIC_URL","")
 VERIFY_TOKEN = os.getenv("TOKEN_SECRET", "")
@@ -27,3 +30,15 @@ async def delete_subscription(id : int):
 async def view_subscriptions():
     """Retourne toutes les subscriptions actives"""
     return await strava_service.get_subscriptions()
+
+@strava_router.get("/auth/login")
+async def strava_login():
+    url = await strava_service.get_login(PUBLIC_URL)
+    return RedirectResponse(url)
+
+@strava_router.get("/auth/callback")
+async def strava_callback(code: str = Query(None)):
+    print("CODE REÇU:", code)
+    return await strava_service.callback(code)
+
+# http://localhost:5000/strava/auth/login
