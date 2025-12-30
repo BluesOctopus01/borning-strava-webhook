@@ -1,8 +1,9 @@
-import storage
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from loguru import logger 
 import os
+
+from services import activities_service
 
 webhook_router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
@@ -28,7 +29,7 @@ async def webhook_validation(
 async def webhook_events(payload: dict):
     """Receptionne 
     """
-    storage.activities.append(payload)
+    activities_service.store_activity(payload)
     owner_id = payload.get("owner_id","unkown")
     object_type = payload.get("object_type","unkown")
     aspect_type = payload.get("aspect_type","unkown")
