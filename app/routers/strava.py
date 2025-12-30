@@ -11,8 +11,9 @@ STRAVA_BASE_URL = "https://www.strava.com/api/v3/push_subscriptions"
 PUBLIC_URL = os.getenv("PUBLIC_URL","")
 VERIFY_TOKEN = os.getenv("TOKEN_SECRET", "")
 
-sub_router = APIRouter()
-@sub_router.delete("/strava/subscriptions/{sub_id}")
+sub_router = APIRouter(prefix="/strava", tags=["Strava"])
+
+@sub_router.delete("/subscriptions/{sub_id}")
 async def delete_subscription(sub_id: int):
     """Permet la suppression du webhook si l'id est donné"""
     async with httpx.AsyncClient() as client:
@@ -28,7 +29,7 @@ async def delete_subscription(sub_id: int):
         "response": r.text
     }
 
-@sub_router.post("/strava/subscribe")
+@sub_router.post("/subscribe")
 async def create_strava_subscription():
     """Lance la procédure pour créer le webhook avec les informations Dev et le callback_url, a faire une seule fois
     """

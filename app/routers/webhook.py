@@ -1,13 +1,14 @@
+import storage
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from loguru import logger 
 import os
 
-webhook_router = APIRouter()
-VERIFY_TOKEN = os.getenv("TOKEN_SECRET", "")
-activities = []
+webhook_router = APIRouter(prefix="/webhook", tags=["Webhook"])
 
-@webhook_router.get("/webhook")
+VERIFY_TOKEN = os.getenv("TOKEN_SECRET", "")
+
+@webhook_router.get("/")
 async def webhook_validation(
     hub_mode: str = Query(None, alias="hub.mode"),
     hub_challenge: str = Query(None, alias="hub.challenge"),
@@ -23,11 +24,11 @@ async def webhook_validation(
     else:
         return JSONResponse(status_code=403, content={"error": "Invalid token"})
 
-@webhook_router.post("/webhook")
+@webhook_router.post("/")
 async def webhook_events(payload: dict):
     """Receptionne 
     """
-    activities.append(payload)
+    storage.activities.append(payload)
     owner_id = payload.get("owner_id","unkown")
     object_type = payload.get("object_type","unkown")
     aspect_type = payload.get("aspect_type","unkown")
