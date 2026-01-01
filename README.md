@@ -116,3 +116,4 @@ main.py # Lancement de l’application FastAPI
 
 - Version *Strava gratuite* limite à 1 utilisateur connecté par application.
 - A terme le token doit être crypter
+- Les tests n'ont pas encore été mis en place avec pylance
