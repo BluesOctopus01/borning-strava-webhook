@@ -63,7 +63,7 @@ uvicorn main:app --reload --port 5000
 ```bash
 http://localhost:5000/docs
 ```
-4. Utiliser la route *POST /Subscribe/* pour créer la subscription au webhook
+4. Utiliser la route `POST /Subscribe/` pour créer la subscription au webhook
 5. Puis accepter les conditions sur :
 ```bash
 http://localhost:5000/auth/login
