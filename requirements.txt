@@ -1,11 +1,19 @@
 # === Framework ===
 fastapi==0.111.0
+
+# === Serveur ===
+uvicorn==0.29.0
+ngrok==1.4.0
+
 # === Configuration & environnement ===
 python-dotenv==1.0.0
-# === Serveur ===
-ngrok==1.4.0
-uvicorn==0.29.0
-# === Utils ===
+pydantic==2.3.0 
+
+# === Requêtes HTTP ===
+httpx==1.2.4
+
+# === Logging ===
 loguru==0.7.2
-# === Test unitaires ===
+
+# === Tests ===
 pytest==8.4.2
