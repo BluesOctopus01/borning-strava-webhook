@@ -5,7 +5,7 @@ from models.strava_event import StravaEvent
 
 def save_raw_event(event:StravaEvent) -> None:
     """Stock l'event dans un dictionnaire id => info event"""
-    storage.strava_event[event.object_id] = event.to_dict()
+    storage.strava_event[event.object_id] = event
 
 def fetch_all_raw_event()-> list[dict]:
     """Retourne tout les events raw"""

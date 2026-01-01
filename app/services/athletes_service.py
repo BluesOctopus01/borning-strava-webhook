@@ -4,7 +4,7 @@ from models.athlete import Athlete
 
 def save_user(athlete : Athlete) -> None:
     """Stock l'athlete dans un dictionnaire id => info athlete"""
-    storage.athletes[athlete.id] = athlete.to_dict()
+    storage.athletes[athlete.id] = athlete
     
 def fetch_an_athlete(athlete_id:int)-> Athlete | None:
     """Fetch un athelte par son id

@@ -21,4 +21,4 @@ async def strava_callback(code: str = Query(None)):
     return await auth_service.callback(code)
 #endregion
 
-#Pour lancer la connection => http://localhost:5000/strava/auth/login
+#Pour lancer la connection => http://localhost:5000/auth/login

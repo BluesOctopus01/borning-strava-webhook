@@ -18,7 +18,7 @@ async def get_raw_activity_id(object_id: int):
     event = activities_service.fetch_a_raw_event(object_id)
     if not event:
         raise HTTPException(status_code=404, detail="Event non trouvé")
-    logger.info(f"event trouvé : {event.to_dict()}")
+    logger.info(f"event trouvé : {event}")
     return event
 #Endregion
 
@@ -46,6 +46,11 @@ async def get_all_strava_activity(object_id: int):
     if not detailed_event :
         raise HTTPException(status_code=400, detail="Erreur")
     
-    logger.info(f"Event trouvé sur Strava {detailed_event}")
+    logger.info(
+        "Strava activity fetched | activity_id={} | athlete_id={} | name='{}'",
+        detailed_event["id"],
+        detailed_event["athlete"]["id"],
+        detailed_event.get("name"),
+    )
     return detailed_event
 #Endregion

@@ -16,7 +16,7 @@ async def webhook_validation(
 ):
     """Callback url, prouve a Strava que mon serveur est accessible
     renvoie le hub challenge et 200 si ok"""
-    logger.info(f"w{hub_challenge}")
+    logger.info(f"hub challenge {hub_challenge}")
     if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
         return JSONResponse(status_code=200, content={"hub.challenge": hub_challenge})
     return JSONResponse(status_code=403, content={"error": "Invalid token"})

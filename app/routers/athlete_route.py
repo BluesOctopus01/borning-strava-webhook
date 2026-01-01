@@ -11,6 +11,6 @@ async def get_athlete(athlete_id: int):
     athlete = athletes_service.fetch_an_athlete(athlete_id)
     if not athlete:
         raise HTTPException(status_code=404, detail="Athlete non trouvé")
-    logger.info(f"Athlete trouvé : {athlete.to_dict()}")
+    logger.info(f"Athlete trouvé : {athlete}")
     return athlete
 #endregion

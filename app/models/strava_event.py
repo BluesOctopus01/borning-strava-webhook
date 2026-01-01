@@ -10,8 +10,3 @@ class StravaEvent(BaseModel):
     owner_id: int
     subscription_id: int
     updates: Optional[Dict] = {}
-
-    def to_dict(self) -> dict:
-        """Retourne un dictionnaire d'un event
-        """
-        return self.model_dump()

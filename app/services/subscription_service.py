@@ -1,6 +1,5 @@
 import httpx
 from config import CLIENT_ID, CLIENT_SECRET,STRAVA_BASE_URL
-
 async def create_subscription(callback_url: str, verify_token: str) -> dict:
     """Parse les données et renvoie un dict"""
     payload = {
